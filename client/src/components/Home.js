@@ -62,9 +62,9 @@ const Home = ({ user, logout }) => {
     });
   };
 
-  const postMessage = (body) => {
+  const postMessage = async (body) => {
     try {
-      const data = saveMessage(body);
+      const data = await saveMessage(body);
 
       if (!body.conversationId) {
         addNewConvo(body.recipientId, data.message);
@@ -80,14 +80,23 @@ const Home = ({ user, logout }) => {
 
   const addNewConvo = useCallback(
     (recipientId, message) => {
-      conversations.forEach((convo) => {
+      const c2 = [...conversations]
+      let currIdx;
+      c2.forEach((convo, idx) => {
         if (convo.otherUser.id === recipientId) {
           convo.messages.push(message);
           convo.latestMessageText = message.text;
           convo.id = message.conversationId;
+          currIdx = idx
         }
       });
-      setConversations(conversations);
+
+      // here we re-arrange the chat in sidebar, so the convo we just add message to will go up to the top
+      const tempConvo = c2[currIdx]
+      c2.splice(currIdx, 1)
+      c2.unshift(tempConvo)
+
+      setConversations(c2);
     },
     [setConversations, conversations]
   );
@@ -106,13 +115,22 @@ const Home = ({ user, logout }) => {
         setConversations((prev) => [newConvo, ...prev]);
       }
 
-      conversations.forEach((convo) => {
+      const c2 = [...conversations]
+      let currIdx;
+      c2.forEach((convo, idx) => {
         if (convo.id === message.conversationId) {
           convo.messages.push(message);
           convo.latestMessageText = message.text;
+          currIdx = idx
         }
       });
-      setConversations(conversations);
+
+      // here we re-arrange the chat in sidebar, so the convo we just add message to will go up to the top
+      const tempConvo = c2[currIdx]
+      c2.splice(currIdx, 1)
+      c2.unshift(tempConvo)
+
+      setConversations(c2);
     },
     [setConversations, conversations]
   );
@@ -192,12 +210,6 @@ const Home = ({ user, logout }) => {
       fetchConversations();
     }
   }, [user]);
-
-  const handleLogout = async () => {
-    if (user && user.id) {
-      await logout(user.id);
-    }
-  };
 
   return (
     <>
