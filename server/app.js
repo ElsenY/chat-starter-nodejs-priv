@@ -7,6 +7,8 @@ const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const db = require("./db");
 const { User } = require("./db/models");
+const cors = require('cors');
+require('dotenv').config();
 // create store for sessions to persist in database
 const sessionStore = new SequelizeStore({ db });
 
@@ -18,6 +20,7 @@ app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(express.static(join(__dirname, "public")));
+app.use(cors());
 
 app.use(function (req, res, next) {
   const token = req.headers["x-access-token"];
