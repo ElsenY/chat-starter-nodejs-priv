@@ -26,4 +26,4 @@ Now for the message not displayed in chronological order, I found out that the m
 I found out the chat order in the sidebar is not updated when a new message is submitted (the convo at the top should be the convo with the newest message just as like usual chat app should do), so I also adjusted it to also update the sidebar chats
 
 ## tools
-I used google, chatGPT for understanding the syntax and libraries used, also I search functions related to the libraries (sequelize, socket.io, others) from the docs to get better understanding.
+I used google, chatGPT for understanding the syntax and libraries used, used postman for early test of the server api, pgadmin for query to visualize DB data, also I search functions related to the libraries (sequelize, socket.io, others) from the docs to get better understanding.
