@@ -24,12 +24,13 @@ const Sidebar = ({
   conversations = [],
   user,
   setActiveChat,
+  logout
 }) => {
   const classes = useStyles();
 
   return (
     <Box className={classes.root}>
-      <CurrentUser user={user} />
+      <CurrentUser user={user} logout={logout} />
       <Typography className={classes.title}>Chats</Typography>
       <Search handleChange={handleChange} />
       {conversations

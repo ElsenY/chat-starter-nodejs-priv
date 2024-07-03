@@ -201,7 +201,6 @@ const Home = ({ user, logout }) => {
 
   return (
     <>
-      <Button onClick={handleLogout}>Logout</Button>
       <Grid container component="main" className={classes.root}>
         <CssBaseline />
         <SidebarContainer
@@ -210,6 +209,7 @@ const Home = ({ user, logout }) => {
           clearSearchedUsers={clearSearchedUsers}
           addSearchedUsers={addSearchedUsers}
           setActiveChat={setActiveChat}
+          logout={logout}
         />
         <ActiveChat
           activeConversation={activeConversation}
