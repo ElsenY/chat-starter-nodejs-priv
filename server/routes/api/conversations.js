@@ -18,7 +18,7 @@ router.get("/", async (req, res, next) => {
           user2Id: userId,
         },
       },
-      attributes: ["id"],
+      attributes: ["id", "lastOpenUser1", "lastOpenUser2"],
       order: [[Message, "createdAt", "ASC"]],
       include: [
         { model: Message },
@@ -55,10 +55,20 @@ router.get("/", async (req, res, next) => {
       if (convoJSON.user1) {
         convoJSON.otherUser = convoJSON.user1;
         delete convoJSON.user1;
+
+        // rename to lastOpened
+        convoJSON.lastOpened = convoJSON.lastOpenUser2;
       } else if (convoJSON.user2) {
         convoJSON.otherUser = convoJSON.user2;
         delete convoJSON.user2;
+
+        // rename to lastOpened
+        convoJSON.lastOpened = convoJSON.lastOpenUser1;
       }
+
+      // delete unused property
+      delete convoJSON.lastOpenUser1;
+      delete convoJSON.lastOpenUser2;
 
       // set property for online status of the other user
       if (onlineUsers.includes(convoJSON.otherUser.id)) {
@@ -79,11 +89,50 @@ router.get("/", async (req, res, next) => {
       return MessB[MessB.length - 1].createdAt - MessA[MessA.length - 1].createdAt
     })
 
-    console.log(conversations)
     res.json(conversations);
   } catch (error) {
     next(error);
   }
 });
+
+
+router.put("/update-last-read", async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+    const reqBody = req.body;
+    const conv = await Conversation.findOne({
+      where: {
+        id: reqBody.conversation_id
+      },
+    })
+
+    convJSON = conv.toJSON()
+
+    let updateCol
+
+    if (convJSON.user1Id === req.user.id) {
+      updateCol = "lastOpenUser1"
+    } else if (convJSON.user2Id == req.user.id) {
+      updateCol = "lastOpenUser2"
+    } else {
+      res.sendStatus(404)
+    }
+
+    await Conversation.update(
+      { [updateCol]: new Date() },
+      {
+        where: {
+          id: reqBody.conversation_id,
+        },
+      },
+    );
+
+    res.json()
+  } catch (error) {
+    next(error);
+  }
+})
 
 module.exports = router;
