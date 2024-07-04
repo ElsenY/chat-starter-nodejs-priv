@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from "@material-ui/core";
+import { Box, Typography, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -18,9 +18,15 @@ const useStyles = makeStyles((theme) => ({
     color: "#9CADC8",
     letterSpacing: -0.17,
   },
+  notReadText: {
+    color: "white",
+    padding: "10px",
+    background: "#3a8dff",
+    borderRadius: "50%",
+  }
 }));
 
-const ChatContent = ({ conversation }) => {
+const ChatContent = ({ conversation, unreads }) => {
   const classes = useStyles();
 
   const { otherUser } = conversation;
@@ -28,14 +34,24 @@ const ChatContent = ({ conversation }) => {
 
   return (
     <Box className={classes.root}>
-      <Box>
-        <Typography className={classes.username}>
-          {otherUser.username}
-        </Typography>
-        <Typography className={classes.previewText}>
-          {latestMessageText}
-        </Typography>
-      </Box>
+      <Grid item container justifyContent="space-between" alignItems="center">
+        <Grid item>
+          <Typography className={classes.username}>
+            {otherUser.username}
+          </Typography>
+          <Typography className={classes.previewText}>
+            {latestMessageText}
+          </Typography>
+        </Grid>
+        {
+          unreads > 0 ? <Grid item className={classes.notReadText}>
+            <Typography>
+              {unreads}
+            </Typography>
+          </Grid> : <></>
+        }
+
+      </Grid>
     </Box>
   );
 };
